@@ -1,0 +1,10 @@
+---
+interface Props {code:string; caption?:string;}
+const {code,caption}=Astro.props;
+---
+<figure class="diagram"><div class="mermaid" data-diagram>{code}</div>{caption&&<figcaption>{caption}</figcaption>}<details><summary>Diagram source</summary><pre>{code}</pre></details></figure>
+<script>
+import mermaid from 'mermaid';
+mermaid.initialize({startOnLoad:false,securityLevel:'strict',theme:'neutral',fontFamily:'Manrope, sans-serif'});
+try {await mermaid.run({querySelector:'[data-diagram]'});}catch{document.querySelectorAll('[data-diagram]').forEach(el=>el.setAttribute('aria-label','Diagram source; visual rendering unavailable'));}
+</script>

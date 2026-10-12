@@ -1,0 +1,11 @@
+---
+import { formatDate } from '../lib/posts';
+import type { CollectionEntry } from 'astro:content';
+interface Props { post: CollectionEntry<'posts'>; index?: number; }
+const {post, index = 0} = Astro.props;
+---
+<a class="post-row" href={`/writing/${post.id}/`}>
+  <span class="post-number">{String(index+1).padStart(2,'0')}</span>
+  <div class="post-copy"><span class="eyebrow">{post.data.category}</span><h3>{post.data.title}</h3><p>{post.data.description}</p><div class="post-meta"><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time><span>·</span><span>{post.data.minutes} min read</span></div></div>
+  <span class="row-arrow" aria-hidden="true">↗</span>
+</a>

@@ -1,0 +1,19 @@
+---
+const { compact = false } = Astro.props;
+const signal = Array.from({length: 101}, (_,i) => `${30+i*4.2},${130-48*Math.sin(i/13)-13*Math.sin(i*1.7)}`).join(' ');
+const filtered = Array.from({length: 101}, (_,i) => `${30+i*4.2},${130-46*Math.sin((i-4)/13)}`).join(' ');
+---
+<figure class:list={['signal-figure', {compact}]}>
+  <div class="figure-top"><span>FIELD NOTE / 001</span><span class="figure-status"><i></i> SIGNAL & SYSTEM</span></div>
+  <svg viewBox="0 0 480 260" role="img" aria-label="Illustration of a noisy signal and its smoother filtered estimate">
+    <defs><pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M 30 0 L 0 0 0 30" fill="none" stroke="currentColor" stroke-opacity=".1" stroke-width="1" /></pattern></defs>
+    <rect x="0" y="0" width="480" height="260" fill="url(#grid)" />
+    <path d="M30 215H455 M30 40V215" fill="none" stroke="currentColor" opacity=".3" />
+    <polyline points={signal} fill="none" stroke="currentColor" opacity=".25" stroke-width="1.6" />
+    <polyline points={filtered} fill="none" stroke="var(--accent)" stroke-width="2.5" />
+    <circle cx="282" cy={130-46*Math.sin(56/13)} r="4.5" fill="var(--accent)" />
+    <text x="255" y="48" fill="currentColor" font-size="12" font-family="monospace">y[t] = αx[t] + (1−α)y[t−1]</text>
+    <text x="32" y="239" fill="currentColor" opacity=".5" font-size="10" font-family="monospace">0</text><text x="411" y="239" fill="currentColor" opacity=".5" font-size="10" font-family="monospace">time →</text>
+  </svg>
+  <figcaption><span><i class="legend raw"></i> Observation</span><span><i class="legend"></i> Estimate</span><span>Finding the signal.</span></figcaption>
+</figure>

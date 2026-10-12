@@ -1,0 +1,13 @@
+---
+const {id='signal-lab'} = Astro.props;
+---
+<signal-lab class="lab" id={id}>
+<div class="lab-heading"><span class="eyebrow">INTERACTIVE / EXPONENTIAL SMOOTHING</span><span class="lab-badge">LIVE MODEL</span></div>
+<svg viewBox="0 0 640 240" role="img" aria-label="Noisy input and exponentially smoothed output"><path d="M30 30V210H620" fill="none" stroke="currentColor" opacity=".25"/><path d="M30 70H620M30 120H620M30 170H620" fill="none" stroke="currentColor" opacity=".08"/><polyline data-raw fill="none" stroke="currentColor" opacity=".25" stroke-width="1.5"/><polyline data-filtered fill="none" stroke="var(--accent)" stroke-width="3"/></svg>
+<label for={`${id}-alpha`}>Smoothing factor <span class="mono">α = <output>0.15</output></span></label><input id={`${id}-alpha`} type="range" min="0.01" max="1" value="0.15" step="0.01"/><div class="range-labels"><span>Smoother · more lag</span><span>Faster · more noise</span></div><p class="lab-caption">Illustrative, deterministic data. The estimate starts at the first observation.</p>
+</signal-lab>
+<script>
+class SignalLab extends HTMLElement {
+connectedCallback(){const input=this.querySelector('input')!;const data=Array.from({length:120},(_,i)=>Math.sin(i/14)*48+Math.sin(i*2.4)*16+Math.cos(i*1.1)*9);const points=(values:number[])=>values.map((v,i)=>`${30+i*4.95},${120-v}`).join(' ');this.querySelector('[data-raw]')!.setAttribute('points',points(data));const update=()=>{const a=Number(input.value);let estimate=data[0];const smoothed=data.map(x=>estimate=a*x+(1-a)*estimate);this.querySelector('[data-filtered]')!.setAttribute('points',points(smoothed));this.querySelector('output')!.textContent=a.toFixed(2);input.setAttribute('aria-valuetext',`${a.toFixed(2)} smoothing factor`);};input.addEventListener('input',update);update();}}
+if(!customElements.get('signal-lab'))customElements.define('signal-lab',SignalLab);
+</script>
