@@ -38,6 +38,8 @@ import SignalLab from '../../components/SignalLab.astro';
 
 ## Personalize
 
+The homepage Donkey Kong type study uses `@chenglou/pretext` to fit text into colored contour spans. `src/lib/kong.ts` defines the original vector mask; `src/components/PretextKong.astro` paints only text on the visible canvas. It supports pointer interaction, type-size adjustment, pausing, reduced-motion preferences, and an SVG fallback. Animation sleeps when the portrait is offscreen or the tab is hidden.
+
 Edit `src/pages/index.astro`, `src/pages/about.astro`, and pages under `src/pages/projects/`. Starter writing is explicitly labeled as examples; replace it with personal work when ready. Colors and typography live in `src/styles/global.css`. Fonts are self-hosted; no analytics are installed.
 
 ## Deploy

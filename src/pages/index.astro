@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import SignalFigure from '../components/SignalFigure.astro';
+import PretextKong from '../components/PretextKong.astro';
 import PostRow from '../components/PostRow.astro';
 import {getPosts} from '../lib/posts';
 const posts = await getPosts();
@@ -8,7 +8,7 @@ const posts = await getPosts();
 <Base>
   <section class="hero">
     <div class="hero-copy"><p class="eyebrow"><span class="live-dot"></span> THE PERSONAL NOTEBOOK OF CLEMENT</p><h1>Making sense<br/>of <em>how things work.</em></h1><p class="hero-description">Code, systems, and the ideas underneath.<br/>A place for careful explanations, small experiments,<br class="desktop-break"/> and things learned along the way.</p><div class="hero-links"><a class="button" href="/writing/">Explore the notebook <span>↗</span></a><a class="text-link" href="/projects/">View projects <span>→</span></a></div></div>
-    <SignalFigure />
+    <PretextKong />
   </section>
   <div class="interest-strip"><span class="eyebrow">AREAS OF EXPLORATION</span><span>Software & systems</span><span>Embedded computing</span><span>Mathematical thinking</span></div>
   <section class="writing-section"><div class="section-heading"><div><span class="eyebrow">01 / THE NOTEBOOK</span><h2>Recent writing<span class="count">{String(posts.length).padStart(2,'0')}</span></h2></div><a class="text-link" href="/writing/">All notes <span>→</span></a></div><div class="home-writing"><div class="post-list">{posts.slice(0,3).map((post,index)=><PostRow post={post} index={index}/>)}</div><aside class="margin-note"><span class="asterisk">✳</span><h3>Understanding,<br/>one layer deeper.</h3><p>The useful part is often in the details: the assumption, the edge case, the experiment that didn’t work.</p><p class="small-note">These first entries are example technical notes. A starting point for a growing notebook.</p><a class="text-link" href="/about/">About this space →</a></aside></div></section>
