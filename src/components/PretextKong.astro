@@ -5,7 +5,7 @@ import frames from '../lib/kong-frames.json';
   <div class="kong-top"><span>MOTION STUDY / 001</span><span>DONKEY KONG</span></div>
   <div class="kong-stage">
     <img class="kong-fallback" src="/media/donkey-kong-poster.png" width={frames.width} height={frames.height} alt="Donkey Kong in the first frame of the original GIF" />
-    <canvas width="480" height="562" role="img" aria-label="Animated Donkey Kong GIF recreated frame by frame as colored text with Pretext"></canvas>
+    <canvas width="480" height="562" role="img" aria-label="Animated Donkey Kong GIF recreated frame by frame as monochrome text with Pretext"></canvas>
   </div>
   <div class="kong-controls">
     <label>Detail <input type="range" min="70" max="150" step="10" value="120" aria-label="Text animation detail" disabled /><output>120</output></label>
@@ -18,7 +18,7 @@ import frames from '../lib/kong-frames.json';
 <style>
 .kong-card{display:block;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px 18px 13px}
 .kong-top,.kong-caption{display:flex;justify-content:space-between;gap:10px;font:8px/1.6 var(--font-mono);letter-spacing:.6px;color:var(--muted)}
-.kong-top{padding-bottom:12px}.kong-stage{position:relative;aspect-ratio:258/302;background:#111815;border-radius:3px;overflow:hidden}
+.kong-top{padding-bottom:12px}.kong-stage{position:relative;aspect-ratio:258/302;background:#111815;border-radius:3px;overflow:hidden;filter:grayscale(1)}
 .kong-stage canvas,.kong-fallback{display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:contain}.kong-fallback{background:white}.kong-stage canvas{opacity:0}.kong-card[data-ready] canvas{opacity:1}.kong-card[data-ready] .kong-fallback{display:none}
 .kong-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 0;font:10px var(--font-sans)}
 .kong-controls label{display:flex;align-items:center;gap:7px;color:var(--muted)}.kong-controls input{width:65px;accent-color:var(--accent);min-height:24px}.kong-controls output{font:9px var(--font-mono);min-width:20px}.kong-controls button{background:transparent;color:var(--accent);border:1px solid var(--line);border-radius:3px;font-size:9px;padding:8px}.kong-controls button:disabled{opacity:.5;cursor:wait}.kong-caption{font-size:8px;letter-spacing:0}.kong-caption a{text-decoration:underline;text-underline-offset:3px}
@@ -105,7 +105,7 @@ class PretextKong extends HTMLElement {
       input.disabled=false;play.disabled=false;compare.disabled=false;status.textContent='14 frames · GIF → text · Pretext';sync();
     };
     const onPlay=()=>{paused=!paused;sync();};
-    const onCompare=()=>{original=!original;compare.textContent=original?'Show text':'Show original';compare.setAttribute('aria-pressed',String(original));canvas.setAttribute('aria-label',original?'Original Donkey Kong GIF frames':'Donkey Kong GIF rendered as colored text using Pretext');paint();};
+    const onCompare=()=>{original=!original;compare.textContent=original?'Show text':'Show original';compare.setAttribute('aria-pressed',String(original));canvas.setAttribute('aria-label',original?'Original Donkey Kong GIF frames':'Donkey Kong GIF rendered as monochrome text using Pretext');paint();};
     const onInput=()=>{output.textContent=input.value;};
     const onChange=()=>{void rebuild();};
     const onReduced=()=>{paused=reduced.matches;sync();};
