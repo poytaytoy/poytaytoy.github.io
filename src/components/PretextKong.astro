@@ -76,7 +76,7 @@ class PretextKong extends HTMLElement {
       // Pretext computes line breaks and glyph advances once for each detail level.
       const prepared=prepareWithSegments('DONKEYKONG'.repeat(4000),font);
       const rows=layoutWithLines(prepared,width,lineHeight).lines.slice(0,Math.ceil(height/lineHeight));
-      const glyphs='.:irsxaeM';
+      const glyphs=' .:irsXA#@';
       const advances=new Map([...new Set('DONKEYKONG'+glyphs)].map(glyph=>[glyph,measureNaturalWidth(prepareWithSegments(glyph,font))]));
       const columns=Math.max(...rows.map(row=>row.text.length));
       const sample=document.createElement('canvas');sample.width=columns;sample.height=rows.length;
@@ -94,8 +94,8 @@ class PretextKong extends HTMLElement {
             const i=(row*columns+col)*4,r=pixels[i],g=pixels[i+1],b=pixels[i+2];
             if(pixels[i+3]>110){
               const luma=(r*.2126+g*.7152+b*.0722)/255;
-              const glyph=glyphs[Math.min(glyphs.length-1,Math.floor(Math.sqrt(luma)*glyphs.length))];
-              c.fillStyle='#000';
+              const glyph=glyphs[Math.min(glyphs.length-1,Math.floor(Math.pow(luma,.7)*glyphs.length))];
+              c.fillStyle='#000';c.globalAlpha=Math.min(1,1.6*Math.pow(luma,.85));
               c.fillText(glyph,x,(row+.5)*lineHeight);
             }
             x+=advances.get(rows[row].text[col])!;
