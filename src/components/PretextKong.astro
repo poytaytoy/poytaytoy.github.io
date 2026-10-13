@@ -16,13 +16,13 @@ import frames from '../lib/kong-frames.json';
   <noscript><p>Enable JavaScript to play the text animation.</p></noscript>
 </pretext-kong>
 <style>
-.kong-card{display:block;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px 18px 13px}
+.kong-card{display:block;min-width:0;padding:0;color:var(--ink)}
 .kong-top,.kong-caption{display:flex;justify-content:space-between;gap:10px;font:8px/1.6 var(--font-mono);letter-spacing:.6px;color:var(--muted)}
-.kong-top{padding-bottom:12px}.kong-stage{position:relative;aspect-ratio:258/302;background:#111815;border-radius:3px;overflow:hidden;filter:grayscale(1)}
-.kong-stage canvas,.kong-fallback{display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:contain}.kong-fallback{background:white}.kong-stage canvas{opacity:0}.kong-card[data-ready] canvas{opacity:1}.kong-card[data-ready] .kong-fallback{display:none}
+.kong-top{padding-bottom:12px}.kong-stage{position:relative;aspect-ratio:258/302;overflow:hidden}
+.kong-stage canvas,.kong-fallback{display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:contain}.kong-fallback{opacity:.6;filter:grayscale(1)}.kong-stage canvas{opacity:0}.kong-card[data-ready] canvas{opacity:1}.kong-card[data-ready] .kong-fallback{display:none}
 .kong-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 0;font:10px var(--font-sans)}
 .kong-controls label{display:flex;align-items:center;gap:7px;color:var(--muted)}.kong-controls input{width:65px;accent-color:var(--accent);min-height:24px}.kong-controls output{font:9px var(--font-mono);min-width:20px}.kong-controls button{background:transparent;color:var(--accent);border:1px solid var(--line);border-radius:3px;font-size:9px;padding:8px}.kong-controls button:disabled{opacity:.5;cursor:wait}.kong-caption{font-size:8px;letter-spacing:0}.kong-caption a{text-decoration:underline;text-underline-offset:3px}
-@media(max-width:720px){.kong-card{padding:14px}.kong-controls{gap:5px}.kong-controls input{width:55px}.kong-controls button{padding:8px 6px}}
+@media(max-width:720px){.kong-card{padding:0}.kong-controls{gap:5px}.kong-controls input{width:55px}.kong-controls button{padding:8px 6px}}
 </style>
 <script>
 import {prepareWithSegments,layoutWithLines,measureNaturalWidth} from '@chenglou/pretext';
@@ -48,8 +48,13 @@ class PretextKong extends HTMLElement {
       context.drawImage(source,(index%metadata.columns)*metadata.width,Math.floor(index/metadata.columns)*metadata.height,metadata.width,metadata.height,0,0,w,h);
     };
     const paint=()=>{
-      ctx.fillStyle=original?'#ffffff':'#111815';ctx.fillRect(0,0,width,height);
-      if(original)drawSource(ctx,current,width,height);else if(cache[current])ctx.drawImage(cache[current],0,0);
+      ctx.clearRect(0,0,width,height);
+      if(original)drawSource(ctx,current,width,height);else if(cache[current]){
+        ctx.drawImage(cache[current],0,0);
+        ctx.globalCompositeOperation='source-in';
+        ctx.fillStyle=getComputedStyle(this).color;ctx.fillRect(0,0,width,height);
+        ctx.globalCompositeOperation='source-over';
+      }
       this.dataset.frame=String(current);
     };
     const tick=(now:number)=>{
@@ -71,7 +76,7 @@ class PretextKong extends HTMLElement {
       // Pretext computes line breaks and glyph advances once for each detail level.
       const prepared=prepareWithSegments('DONKEYKONG'.repeat(4000),font);
       const rows=layoutWithLines(prepared,width,lineHeight).lines.slice(0,Math.ceil(height/lineHeight));
-      const glyphs='.:+oO0#@';
+      const glyphs='.:irsxaeM';
       const advances=new Map([...new Set('DONKEYKONG'+glyphs)].map(glyph=>[glyph,measureNaturalWidth(prepareWithSegments(glyph,font))]));
       const columns=Math.max(...rows.map(row=>row.text.length));
       const sample=document.createElement('canvas');sample.width=columns;sample.height=rows.length;
@@ -90,7 +95,7 @@ class PretextKong extends HTMLElement {
             if(pixels[i+3]>110){
               const luma=(r*.2126+g*.7152+b*.0722)/255;
               const glyph=glyphs[Math.min(glyphs.length-1,Math.floor(Math.sqrt(luma)*glyphs.length))];
-              c.fillStyle=`rgb(${Math.min(255,r*1.2+12)},${Math.min(255,g*1.2+12)},${Math.min(255,b*1.2+12)})`;
+              c.fillStyle='#000';
               c.fillText(glyph,x,(row+.5)*lineHeight);
             }
             x+=advances.get(rows[row].text[col])!;
@@ -109,8 +114,10 @@ class PretextKong extends HTMLElement {
     const onInput=()=>{output.textContent=input.value;};
     const onChange=()=>{void rebuild();};
     const onReduced=()=>{paused=reduced.matches;sync();};
+    const themeObserver=new MutationObserver(paint);
+    themeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
     const observer=new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;sync();});
-    this.dispose=()=>{generation++;cancelAnimationFrame(animation);observer.disconnect();document.removeEventListener('visibilitychange',sync);reduced.removeEventListener('change',onReduced);input.removeEventListener('input',onInput);input.removeEventListener('change',onChange);play.removeEventListener('click',onPlay);compare.removeEventListener('click',onCompare);cache=[];};
+    this.dispose=()=>{generation++;cancelAnimationFrame(animation);observer.disconnect();themeObserver.disconnect();document.removeEventListener('visibilitychange',sync);reduced.removeEventListener('change',onReduced);input.removeEventListener('input',onInput);input.removeEventListener('change',onChange);play.removeEventListener('click',onPlay);compare.removeEventListener('click',onCompare);cache=[];};
     try{
       await Promise.all([source.decode(),document.fonts.load('400 10px "IBM Plex Mono"')]);
       if(!this.isConnected)return;

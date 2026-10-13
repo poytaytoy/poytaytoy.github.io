@@ -9,10 +9,12 @@ frames, delays = [], []
 for i in range(source.n_frames):
     source.seek(i)
     frame = source.convert('RGBA').copy()
-    if i == 0:
-        frame.save('public/media/donkey-kong-poster.png')
     pixels = frame.load()
     queue = deque([(x, y) for x in range(w) for y in (0, h-1)] + [(x, y) for y in range(h) for x in (0, w-1)])
+    # White gaps enclosed between the arms and torso are background too.
+    # Seed below the face to preserve the whites of the eyes.
+    queue.extend((x, y) for y in range(h//2, h) for x in range(w)
+                 if min(pixels[x, y][:3]) >= 230)
     seen = set()
     while queue:
         x, y = queue.popleft()
@@ -24,6 +26,8 @@ for i in range(source.n_frames):
             continue
         pixels[x, y] = (r, g, b, 0)
         queue.extend(((x-1,y),(x+1,y),(x,y-1),(x,y+1)))
+    if i == 0:
+        frame.save('public/media/donkey-kong-poster.png')
     frames.append(frame)
     delays.append(source.info.get('duration', 100))
 atlas = Image.new('RGBA', (w*7, h*2))
