@@ -1,92 +1,124 @@
 ---
-import {kongShapes} from '../lib/kong';
+import frames from '../lib/kong-frames.json';
 ---
 <pretext-kong class="kong-card">
-  <div class="kong-top"><span>TYPE STUDY / 001</span><span>DONKEY KONG</span></div>
+  <div class="kong-top"><span>MOTION STUDY / 001</span><span>DONKEY KONG</span></div>
   <div class="kong-stage">
-    <svg class="kong-fallback" viewBox="0 0 480 420" role="img" aria-label="Donkey Kong with his red tie">{kongShapes.map(s=><path d={s.path} fill={s.color}/>)}<text x="240" y="345" text-anchor="middle" fill="#f4cc59" font-size="25" font-weight="bold">DK</text></svg>
-    <canvas width="960" height="840" role="img" aria-label="Donkey Kong rendered entirely from words using Pretext. Move your pointer across the portrait to scatter the lettering."></canvas>
+    <img class="kong-fallback" src="/media/donkey-kong-poster.png" width={frames.width} height={frames.height} alt="Donkey Kong in the first frame of the original GIF" />
+    <canvas width="480" height="562" role="img" aria-label="Animated Donkey Kong GIF recreated frame by frame as colored text with Pretext"></canvas>
   </div>
-  <div class="kong-controls"><label>Type size <input type="range" min="5" max="10" step="1" value="6" aria-label="Portrait type size"/><output>6</output></label><button type="button" class="kong-motion" aria-pressed="false">Pause motion</button></div>
-  <div class="kong-caption"><span>Move over the letters. <span aria-hidden="true">↗</span></span><a href="https://github.com/chenglou/pretext">Made with Pretext</a></div>
-  <noscript><p class="kong-caption">Enable JavaScript to explore the text rendering.</p></noscript>
+  <div class="kong-controls">
+    <label>Detail <input type="range" min="70" max="150" step="10" value="120" aria-label="Text animation detail" disabled /><output>120</output></label>
+    <button type="button" data-original aria-pressed="false" disabled>Show original</button>
+    <button type="button" data-play aria-pressed="false" disabled>Pause</button>
+  </div>
+  <div class="kong-caption"><span role="status">Preparing text frames…</span><a href={frames.source}>GIF source ↗</a></div>
+  <noscript><p>Enable JavaScript to play the text animation.</p></noscript>
 </pretext-kong>
 <style>
-.kong-card{display:block;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:18px 20px 15px;transform:rotate(-1deg)}
-.kong-top,.kong-caption{display:flex;justify-content:space-between;gap:10px;font:8px/1.6 var(--font-mono);letter-spacing:.8px;color:var(--muted)}
-.kong-top{border-bottom:1px solid var(--line);padding-bottom:12px}.kong-stage{position:relative;aspect-ratio:480/420;margin:6px 0;background:#19211d;background-image:radial-gradient(#344036 .6px,transparent .6px);background-size:14px 14px;border-radius:3px}
-.kong-stage canvas,.kong-fallback{display:block;width:100%;height:100%;position:absolute;inset:0}.kong-stage canvas{opacity:0}.kong-card[data-ready] canvas{opacity:1}.kong-card[data-ready] .kong-fallback{display:none}
-.kong-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:12px 0;font:10px var(--font-sans)}
-.kong-controls label{display:flex;align-items:center;gap:8px;color:var(--muted)}.kong-controls input{width:72px;accent-color:var(--accent);min-height:22px}.kong-controls output{font:9px var(--font-mono);min-width:12px}.kong-motion{background:transparent;color:var(--accent);border:1px solid var(--line);border-radius:3px;font-size:9px;padding:7px 9px}.kong-caption{font-size:8px;letter-spacing:0}.kong-caption a{text-decoration:underline;text-underline-offset:3px}
-@media(max-width:720px){.kong-card{transform:none;padding:16px}.kong-stage{margin:0}.kong-controls input{width:80px}}
+.kong-card{display:block;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px 18px 13px}
+.kong-top,.kong-caption{display:flex;justify-content:space-between;gap:10px;font:8px/1.6 var(--font-mono);letter-spacing:.6px;color:var(--muted)}
+.kong-top{padding-bottom:12px}.kong-stage{position:relative;aspect-ratio:258/302;background:#111815;border-radius:3px;overflow:hidden}
+.kong-stage canvas,.kong-fallback{display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:contain}.kong-fallback{background:white}.kong-stage canvas{opacity:0}.kong-card[data-ready] canvas{opacity:1}.kong-card[data-ready] .kong-fallback{display:none}
+.kong-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 0;font:10px var(--font-sans)}
+.kong-controls label{display:flex;align-items:center;gap:7px;color:var(--muted)}.kong-controls input{width:65px;accent-color:var(--accent);min-height:24px}.kong-controls output{font:9px var(--font-mono);min-width:20px}.kong-controls button{background:transparent;color:var(--accent);border:1px solid var(--line);border-radius:3px;font-size:9px;padding:8px}.kong-controls button:disabled{opacity:.5;cursor:wait}.kong-caption{font-size:8px;letter-spacing:0}.kong-caption a{text-decoration:underline;text-underline-offset:3px}
+@media(max-width:720px){.kong-card{padding:14px}.kong-controls{gap:5px}.kong-controls input{width:55px}.kong-controls button{padding:8px 6px}}
 </style>
 <script>
-import {prepareWithSegments,layoutNextLine,type LayoutCursor} from '@chenglou/pretext';
-import {kongShapes} from '../lib/kong';
-type TextRun={text:string;x:number;y:number;color:string;width:number};
+import {prepareWithSegments,layoutWithLines,measureNaturalWidth} from '@chenglou/pretext';
+import metadata from '../lib/kong-frames.json';
 class PretextKong extends HTMLElement {
-  private cleanup?:()=>void;
+  private dispose?:()=>void;
   async connectedCallback(){
     const canvas=this.querySelector('canvas')!;
     const ctx=canvas.getContext('2d')!;
     const input=this.querySelector('input')!;
     const output=this.querySelector('output')!;
-    const button=this.querySelector('button')!;
-    const reduce=matchMedia('(prefers-reduced-motion: reduce)');
-    let paused=reduce.matches,visible=true,inView=true,frame=0,lastTime=0,runs:TextRun[]=[],size=6;
-    let pointer={x:-1000,y:-1000};
-    const mask=document.createElement('canvas');mask.width=480;mask.height=420;
-    const m=mask.getContext('2d',{willReadFrequently:true})!;
-    const palette:Record<string,string>={'#68402b':'#995f3b','#875236':'#bf8754','#ab744d':'#dfae76','#cf9a63':'#edc48a','#dfaf75':'#f5ce91','#f4ddb0':'#fff0c9','#c23d32':'#f05743'};
-    for(const shape of kongShapes){m.fillStyle=palette[shape.color]||shape.color;m.fill(new Path2D(shape.path));}
-    // Text is broken and measured by Pretext for each contiguous color span.
-    // The mask supplies contours only; the visible canvas paints text, never an image.
-    const pixels=m.getImageData(0,0,480,420).data;
-    const sample=(x:number,y:number)=>{const i=(y*480+x)*4;return pixels[i+3]>128?`${pixels[i]},${pixels[i+1]},${pixels[i+2]}`:'';};
-    const words='DONKEY·KONG·DK·';
-    await document.fonts.load('400 10px "IBM Plex Mono"');
-    if(!this.isConnected)return;
-    const prepare=()=>{
-      size=Number(input.value);output.textContent=String(size);runs=[];
-      const prepared=prepareWithSegments(words.repeat(2000),`600 ${size}px "IBM Plex Mono"`);
-      let cursor:LayoutCursor={segmentIndex:0,graphemeIndex:0};
-      for(let y=16;y<400;y+=Math.max(4,Math.round(size*.9))){let x=36;
-        while(x<444){const color=sample(x,y);const left=x;while(x<444&&sample(x,y)===color)x++;
-          if(!color||x-left<size*.65)continue;
-          const line=layoutNextLine(prepared,cursor,x-left);
-          if(line){runs.push({text:line.text,x:left+(x-left-line.width)/2,y,color:`rgb(${color})`,width:line.width});cursor=line.end;}
+    const play=this.querySelector<HTMLButtonElement>('[data-play]')!;
+    const compare=this.querySelector<HTMLButtonElement>('[data-original]')!;
+    const status=this.querySelector<HTMLElement>('[role=status]')!;
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+    const width=480,height=Math.round(width*metadata.height/metadata.width);
+    canvas.width=width;canvas.height=height;
+    let paused=reduced.matches,original=false,inView=true,animation=0,elapsed=0,last=0,current=0,generation=0;
+    let cache:HTMLCanvasElement[]=[];
+    const source=new Image();source.src='/media/donkey-kong-frames.webp';
+    const total=metadata.delays.reduce((a,b)=>a+b,0);
+    const drawSource=(context:CanvasRenderingContext2D,index:number,w:number,h:number)=>{
+      context.drawImage(source,(index%metadata.columns)*metadata.width,Math.floor(index/metadata.columns)*metadata.height,metadata.width,metadata.height,0,0,w,h);
+    };
+    const paint=()=>{
+      ctx.fillStyle=original?'#ffffff':'#111815';ctx.fillRect(0,0,width,height);
+      if(original)drawSource(ctx,current,width,height);else if(cache[current])ctx.drawImage(cache[current],0,0);
+      this.dataset.frame=String(current);
+    };
+    const tick=(now:number)=>{
+      animation=0;if(paused||!inView||document.hidden)return;
+      if(last)elapsed=(elapsed+now-last)%total;last=now;
+      let end=0,next=0;for(;next<metadata.delays.length-1;next++){end+=metadata.delays[next];if(elapsed<end)break;}
+      if(next!==current){current=next;paint();}
+      animation=requestAnimationFrame(tick);
+    };
+    const sync=()=>{
+      cancelAnimationFrame(animation);last=0;
+      play.textContent=paused?'Play':'Pause';play.setAttribute('aria-pressed',String(paused));
+      if(!paused&&inView&&!document.hidden)animation=requestAnimationFrame(tick);
+    };
+    const rebuild=async()=>{
+      const token=++generation;input.disabled=true;output.textContent=input.value;status.textContent='Preparing text frames…';
+      const fontSize=width/(Number(input.value)*.6),lineHeight=fontSize*.9;
+      const font=`600 ${fontSize}px "IBM Plex Mono"`;
+      // Pretext computes line breaks and glyph advances once for each detail level.
+      const prepared=prepareWithSegments('DONKEYKONG'.repeat(4000),font);
+      const rows=layoutWithLines(prepared,width,lineHeight).lines.slice(0,Math.ceil(height/lineHeight));
+      const glyphs='.:+oO0#@';
+      const advances=new Map([...new Set('DONKEYKONG'+glyphs)].map(glyph=>[glyph,measureNaturalWidth(prepareWithSegments(glyph,font))]));
+      const columns=Math.max(...rows.map(row=>row.text.length));
+      const sample=document.createElement('canvas');sample.width=columns;sample.height=rows.length;
+      const s=sample.getContext('2d',{willReadFrequently:true})!;
+      const nextCache:HTMLCanvasElement[]=[];
+      for(let f=0;f<metadata.delays.length;f++){
+        if(token!==generation||!this.isConnected)return;
+        s.clearRect(0,0,columns,rows.length);drawSource(s,f,columns,rows.length);
+        const pixels=s.getImageData(0,0,columns,rows.length).data;
+        const image=document.createElement('canvas');image.width=width;image.height=height;
+        const c=image.getContext('2d')!;c.font=font;c.textBaseline='middle';
+        for(let row=0;row<rows.length;row++){
+          let x=(width-rows[row].width)/2;
+          for(let col=0;col<rows[row].text.length;col++){
+            const i=(row*columns+col)*4,r=pixels[i],g=pixels[i+1],b=pixels[i+2];
+            if(pixels[i+3]>110){
+              const luma=(r*.2126+g*.7152+b*.0722)/255;
+              const glyph=glyphs[Math.min(glyphs.length-1,Math.floor(Math.sqrt(luma)*glyphs.length))];
+              c.fillStyle=`rgb(${Math.min(255,r*1.2+12)},${Math.min(255,g*1.2+12)},${Math.min(255,b*1.2+12)})`;
+              c.fillText(glyph,x,(row+.5)*lineHeight);
+            }
+            x+=advances.get(rows[row].text[col])!;
+          }
         }
+        nextCache.push(image);
+        // Yield between frames so mobile controls and scrolling remain responsive.
+        await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
       }
-      // The tie monogram is also positioned from Pretext's measured line width.
-      const monogram=layoutNextLine(prepareWithSegments('DK','600 22px "IBM Plex Mono"'),{segmentIndex:0,graphemeIndex:0},60);
-      if(monogram)runs.push({text:monogram.text,x:240-monogram.width/2,y:345,color:'#ffe070',width:monogram.width});
-      this.dataset.ready='true';draw(0);
+      if(token!==generation)return;
+      cache=nextCache;this.dataset.ready='true';this.dataset.frames=String(cache.length);paint();
+      input.disabled=false;play.disabled=false;compare.disabled=false;status.textContent='14 frames · GIF → text · Pretext';sync();
     };
-    const draw=(time:number)=>{
-      ctx.setTransform(2,0,0,2,0,0);ctx.clearRect(0,0,480,420);ctx.textBaseline='middle';
-      for(const [index,run] of runs.entries()){
-        const dx=run.x+run.width/2-pointer.x,dy=run.y-pointer.y,distance=Math.hypot(dx,dy);
-        const force=paused?0:Math.max(0,1-distance/85);
-        const drift=paused?0:Math.sin(time/1000+run.y/90)*.7;
-        ctx.font=`600 ${index===runs.length-1?22:size}px "IBM Plex Mono"`;ctx.fillStyle=run.color;
-        ctx.fillText(run.text,run.x+dx*force*.3,run.y+dy*force*.3+drift);
-      }
-    };
-    const tick=(time:number)=>{frame=0;if(!paused&&visible){if(time-lastTime>32){draw(time);lastTime=time;}frame=requestAnimationFrame(tick);}};
-    const start=()=>{cancelAnimationFrame(frame);frame=0;button.textContent=paused?'Resume motion':'Pause motion';button.setAttribute('aria-pressed',String(paused));if(!paused&&visible)frame=requestAnimationFrame(tick);else draw(0);};
-    const onInput=()=>{prepare();start();};
-    const onMove=(event:PointerEvent)=>{const rect=canvas.getBoundingClientRect();pointer={x:(event.clientX-rect.left)*480/rect.width,y:(event.clientY-rect.top)*420/rect.height};};
-    const leave=()=>{pointer={x:-1000,y:-1000};};
-    const toggle=()=>{paused=!paused;start();};
-    const onPreference=()=>{paused=reduce.matches;start();};
-    const observer=new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;visible=inView&&!document.hidden;start();});
-    const onVisibility=()=>{visible=inView&&!document.hidden;start();};
-    input.addEventListener('input',onInput);button.addEventListener('click',toggle);canvas.addEventListener('pointermove',onMove);canvas.addEventListener('pointerleave',leave);canvas.addEventListener('pointerup',leave);reduce.addEventListener('change',onPreference);document.addEventListener('visibilitychange',onVisibility);
-    prepare();observer.observe(this);start();
-    this.cleanup=()=>{cancelAnimationFrame(frame);observer.disconnect();input.removeEventListener('input',onInput);button.removeEventListener('click',toggle);canvas.removeEventListener('pointermove',onMove);canvas.removeEventListener('pointerleave',leave);canvas.removeEventListener('pointerup',leave);reduce.removeEventListener('change',onPreference);document.removeEventListener('visibilitychange',onVisibility);};
+    const onPlay=()=>{paused=!paused;sync();};
+    const onCompare=()=>{original=!original;compare.textContent=original?'Show text':'Show original';compare.setAttribute('aria-pressed',String(original));canvas.setAttribute('aria-label',original?'Original Donkey Kong GIF frames':'Donkey Kong GIF rendered as colored text using Pretext');paint();};
+    const onInput=()=>{output.textContent=input.value;};
+    const onChange=()=>{void rebuild();};
+    const onReduced=()=>{paused=reduced.matches;sync();};
+    const observer=new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;sync();});
+    this.dispose=()=>{generation++;cancelAnimationFrame(animation);observer.disconnect();document.removeEventListener('visibilitychange',sync);reduced.removeEventListener('change',onReduced);input.removeEventListener('input',onInput);input.removeEventListener('change',onChange);play.removeEventListener('click',onPlay);compare.removeEventListener('click',onCompare);cache=[];};
+    try{
+      await Promise.all([source.decode(),document.fonts.load('400 10px "IBM Plex Mono"')]);
+      if(!this.isConnected)return;
+      play.addEventListener('click',onPlay);compare.addEventListener('click',onCompare);input.addEventListener('input',onInput);input.addEventListener('change',onChange);reduced.addEventListener('change',onReduced);document.addEventListener('visibilitychange',sync);observer.observe(this);
+      await rebuild();
+    }catch{status.textContent='Text animation unavailable — original preview shown.';this.removeAttribute('data-ready');}
   }
-  disconnectedCallback(){this.cleanup?.();}
+  disconnectedCallback(){this.dispose?.();}
 }
 if(!customElements.get('pretext-kong'))customElements.define('pretext-kong',PretextKong);
 </script>
-

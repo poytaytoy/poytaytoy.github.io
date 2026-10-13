@@ -38,7 +38,9 @@ import SignalLab from '../../components/SignalLab.astro';
 
 ## Personalize
 
-The homepage Donkey Kong type study uses `@chenglou/pretext` to fit text into colored contour spans. `src/lib/kong.ts` defines the original vector mask; `src/components/PretextKong.astro` paints only text on the visible canvas. It supports pointer interaction, type-size adjustment, pausing, reduced-motion preferences, and an SVG fallback. Animation sleeps when the portrait is offscreen or the tab is hidden.
+The homepage Donkey Kong animation converts the user-selected [Tenor GIF](https://tenor.com/view/donkey-kong-gif-9557225), found via [this Pinterest pin](https://www.pinterest.com/pin/donkey-kong-gif-donkeykong-discover-share-gifs--10625749111059803/), into colored text. `@chenglou/pretext` computes line breaks and glyph advances; Canvas samples and renders all 14 frames at their original 50 ms timing. The text frames are cached, so playback only copies the selected frame. Controls adjust detail, pause playback, and compare against the original at the same frame. Reduced-motion preferences pause initial playback, and animation sleeps offscreen or in a hidden tab.
+
+Assets and timing metadata are checked in. To regenerate them, install Pillow and run `python scripts/prepare-kong.py` from the project root. The script composites GIF frames and removes only near-white background connected to the image boundary, preserving interior highlights. The original media is third-party content, not an original project illustration.
 
 Edit `src/pages/index.astro`, `src/pages/about.astro`, and pages under `src/pages/projects/`. Starter writing is explicitly labeled as examples; replace it with personal work when ready. Colors and typography live in `src/styles/global.css`. Fonts are self-hosted; no analytics are installed.
 
