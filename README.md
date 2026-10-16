@@ -24,7 +24,6 @@ Edit `content/about.md` and `content/projects.md` for the main pages. Site title
 
 ```sh
 hugo --gc --minify
-python scripts/check_site.py
 ```
 
 Push to `main` to build and publish through GitHub Actions. Pull requests run the build and generated-site checks without deploying. Repository Settings → Pages must use **GitHub Actions** (already configured during migration). No personal token is required by the workflow.
