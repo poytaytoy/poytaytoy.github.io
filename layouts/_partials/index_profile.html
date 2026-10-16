@@ -1,0 +1,11 @@
+{{/* Homepage prose lives in content/_index.md, while display settings stay in hugo.toml. */}}
+<div class="profile">
+  <div class="profile_inner">
+    {{ with site.Params.profileMode }}
+    <img src="{{ .imageUrl | relURL }}" alt="{{ .imageTitle }}" width="{{ .imageWidth }}" height="{{ .imageHeight }}" fetchpriority="high" />
+    {{ end }}
+    <h1>{{ .Title }}</h1>
+    <div class="profile-description">{{ .Content }}</div>
+    {{ partial "social_icons.html" (dict) }}
+  </div>
+</div>

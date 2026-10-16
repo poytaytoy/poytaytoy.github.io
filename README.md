@@ -39,3 +39,7 @@ To update PaperMod deliberately, run `git submodule update --remote themes/Paper
 
 The former Astro site remains in Git history through commit `f9d1e0e`. This migration replaces its active pages and interactive demos with a minimal Hugo site. Use Git history to recover old content if desired.
 
+
+## Profile homepage
+
+Edit `content/_index.md` to change the homepage heading and introduction using Markdown. The homepage uses PaperMod profile mode; posts appear on `/posts/`. Navigation and social links stay in `hugo.toml`. The homepage loads the avatar directly from GitHub using the profile image URL in `hugo.toml`; avatar changes appear after GitHub/browser caches refresh. The small `layouts/_partials/index_profile.html` override renders the Markdown introduction, and `assets/css/extended/profile.css` controls its width and avatar shape.

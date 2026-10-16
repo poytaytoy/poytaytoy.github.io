@@ -1,6 +1,6 @@
 baseURL = 'https://poytaytoy.github.io/'
 locale = 'en-US'
-title = "Clement's notebook"
+title = "clement chung"
 theme = 'PaperMod'
 enableRobotsTXT = true
 
@@ -9,7 +9,7 @@ pagerSize = 10
 
 [params]
 env = 'production'
-description = 'Notes on software, systems, and things I am learning.'
+description = 'Clement Chung’s personal notebook: projects, experiments, and things I learn.'
 author = 'Clement'
 defaultTheme = 'auto'
 ShowReadingTime = true
@@ -19,9 +19,12 @@ ShowBreadCrumbs = true
 ShowToc = true
 mainSections = ['posts']
 
-[params.homeInfoParams]
-Title = "Hi, I'm Clement."
-Content = 'A notebook for software, systems, and things I am learning. Start with the blog, explore my projects, or find me on GitHub.'
+[params.profileMode]
+enabled = true
+imageUrl = "https://avatars.githubusercontent.com/u/122646162?v=4"
+imageTitle = "Clement’s GitHub avatar"
+imageWidth = 120
+imageHeight = 120
 
 [params.assets]
 favicon = '/favicon.svg'
@@ -30,24 +33,39 @@ favicon = '/favicon.svg'
 name = 'github'
 url = 'https://github.com/poytaytoy'
 [[params.socialIcons]]
-name = 'rss'
-url = '/index.xml'
+name = 'linkedin'
+url = 'https://www.linkedin.com/in/clement-chung-36b9082b6/'
+[[params.socialIcons]]
+name = 'email'
+url = 'mailto:c58chung@uwaterloo.ca'
+[[menu.main]]
+name = 'home'
+url = '/'
+weight = -10
 
 [[menu.main]]
-name = 'Blog'
+name = 'blog'
 url = '/posts/'
 weight = 10
 [[menu.main]]
-name = 'Projects'
+name = 'projects'
 url = '/projects/'
 weight = 20
 [[menu.main]]
-name = 'About'
+name = 'about'
 url = '/about/'
 weight = 30
+
+[[menu.main]]
+name = 'resume'
+url = '/resume.pdf'
+weight = 40
 
 [markup.highlight]
 noClasses = false
 
 [caches.images]
 dir = ':cacheDir/images'
+
+[markup.goldmark.renderer]
+unsafe = true

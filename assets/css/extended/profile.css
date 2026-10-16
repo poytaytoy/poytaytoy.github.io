@@ -1,0 +1,5 @@
+.profile .profile_inner { width: 100%; }
+.profile .profile_inner > img { border-radius: 50%; object-fit: cover; }
+.profile-description { max-width: 640px; margin: 0 auto; line-height: 1.7; }
+.profile-description p { margin: 0 0 0.7em; }
+.profile-description a { text-decoration: underline; text-underline-offset: 3px; }
