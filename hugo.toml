@@ -27,7 +27,7 @@ imageWidth = 120
 imageHeight = 120
 
 [params.assets]
-favicon = '/favicon.svg'
+favicon = 'https://avatars.githubusercontent.com/u/122646162?v=4&s=64'
 
 [[params.socialIcons]]
 name = 'github'
@@ -44,7 +44,7 @@ url = '/'
 weight = -10
 
 [[menu.main]]
-name = 'blog'
+name = 'posts'
 url = '/posts/'
 weight = 10
 [[menu.main]]
