@@ -1,5 +1,0 @@
----
-import Base from '../../layouts/Base.astro';
-import SignalLab from '../../components/SignalLab.astro';
----
-<Base title="Signal Lab — Clement"><section class="page-intro"><a class="text-link" href="/projects/">← All projects</a><h1>A little lab<br/>for <em>noisy signals.</em></h1><p>An interactive demo of exponential smoothing. Everything runs in your browser using deterministic sample data.</p></section><div class="standalone-prose"><SignalLab /><div class="prose"><h2>One parameter, two competing goals</h2><p>Drag the smoothing factor toward zero for a quieter estimate, or toward one for a faster response. The gray trace is the observation; the green trace is the estimate.</p><p>The model uses <code>estimate += alpha * (measurement - estimate)</code>. It starts from the first observation. No external data, accounts, or network calls are involved.</p><h2>What to look for</h2><p>Notice how the filtered peaks shift to the right when smoothing increases. That delay matters when a measurement is used to make a decision or control a physical system.</p><a href="/writing/smoothing-noisy-signals/">Read the derivation and implementation →</a></div></div></Base>

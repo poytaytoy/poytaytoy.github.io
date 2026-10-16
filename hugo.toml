@@ -1,0 +1,53 @@
+baseURL = 'https://poytaytoy.github.io/'
+locale = 'en-US'
+title = "Clement's notebook"
+theme = 'PaperMod'
+enableRobotsTXT = true
+
+[pagination]
+pagerSize = 10
+
+[params]
+env = 'production'
+description = 'Notes on software, systems, and things I am learning.'
+author = 'Clement'
+defaultTheme = 'auto'
+ShowReadingTime = true
+ShowCodeCopyButtons = true
+ShowPostNavLinks = true
+ShowBreadCrumbs = true
+ShowToc = true
+mainSections = ['posts']
+
+[params.homeInfoParams]
+Title = "Hi, I'm Clement."
+Content = 'A notebook for software, systems, and things I am learning. Start with the blog, explore my projects, or find me on GitHub.'
+
+[params.assets]
+favicon = '/favicon.svg'
+
+[[params.socialIcons]]
+name = 'github'
+url = 'https://github.com/poytaytoy'
+[[params.socialIcons]]
+name = 'rss'
+url = '/index.xml'
+
+[[menu.main]]
+name = 'Blog'
+url = '/posts/'
+weight = 10
+[[menu.main]]
+name = 'Projects'
+url = '/projects/'
+weight = 20
+[[menu.main]]
+name = 'About'
+url = '/about/'
+weight = 30
+
+[markup.highlight]
+noClasses = false
+
+[caches.images]
+dir = ':cacheDir/images'

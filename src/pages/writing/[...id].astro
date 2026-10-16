@@ -1,9 +1,0 @@
----
-import {render} from 'astro:content';
-import {getPosts} from '../../lib/posts';
-import Post from '../../layouts/Post.astro';
-export async function getStaticPaths(){return (await getPosts()).map(post=>({params:{id:post.id},props:{post}}));}
-const {post}=Astro.props;
-const {Content,headings}=await render(post);
----
-<Post post={post} headings={headings}><Content /></Post>
