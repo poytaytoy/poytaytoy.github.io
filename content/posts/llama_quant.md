@@ -1,12 +1,12 @@
 ---
-title: 'Q4_K and Q6_K Quantization in Llama.cpp'
+title: 'Q4_K Quantization in Llama.cpp'
 date: 2026-10-16
 draft: false
-description: 'Notes on how Q4_K and Q6_K quantization work in llama.cpp.'
+description: 'Notes on how Q4_K quantization works in llama.cpp.'
 tags: ['LLMs', 'Quantization', 'C++', 'llama.cpp', 'inference']
 ---
 
-When I was working on my inference engine for Qwen3-4B-Q4_K_M, there were little details on Q4_K and Q4_6 quantization. It turns out it was developed within this [PR](https://github.com/ggml-org/llama.cpp/pull/1684). There weren't any formal papers on this as it was a clever idea by someone. While there are `Q2_K`, `Q3_K`, ..., `Q4_K`, and `Q6_K` with each being slightly different, I'm only going to focus on `Q4_K` and `Q6_K`. Hopefully with these two, you could figure out the rest.
+When I was working on my inference engine for Qwen3-4B-Q4_K_M, there were few details on Q4_K quantization. It turns out it was developed within this [PR](https://github.com/ggml-org/llama.cpp/pull/1684). There weren't any formal papers on this as it was a clever idea by someone. While there are several K-quantization formats, each slightly different, I'm only going to focus on `Q4_K`. Hopefully with this, you could figure out the rest.
 
 ## What is quantization? 
 
